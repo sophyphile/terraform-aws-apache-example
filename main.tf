@@ -34,8 +34,16 @@ resource "aws_security_group" "sg_my_server" {
   }
 }
 
+data "aws_subnets" "subnet_ids" {
+  filter {
+    name = "vpc-id"
+    values = [data.aws_vpc.main.id]
+  }
+}
+
 resource "aws_instance" "sami_server" {
   ami           = "${data.aws_ami.amazon-linux-2.id}"
+  subnet_id = data.aws_subnets.subnet_ids.ids[0]
   instance_type = var.instance_type
   tags = {
     Name = var.server_name
